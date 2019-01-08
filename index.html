@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Treemap</title>
+  <style>
+    body,
+    div {
+      font-family: arvo, sans-serif;
+    }
+
+    .treemap .node {
+      font-size: 250%;
+      line-height: 150%;
+      overflow: hidden;
+      position: absolute;
+      text-indent: 1%;
+      transition: background 1s;
+      transition: color 0.5s;
+    }
+    .treemap .node:hover {
+      background: grey !important;
+      color: white;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="treemap"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js"></script>
+  <script>
+    var data = {
+      "name": "cluster",
+      "children": [
+        { "name": "Google", "mcap": 360.43 },
+        { "name": "Microsoft", "mcap": 325.71 },
+        { "name": "Oracle", "mcap": 183.75 },
+        { "name": "Apple", "mcap": 517.66 },
+        { "name": "HP", "mcap": 61.72 },
+        { "name": "Intel", "mcap": 130.27 }
+      ]
+    };
+
+    var color = d3.scale.category20c();
+
+    var treemap =
+      d3.layout.treemap()
+      // use 100 x 100 px, which we'll apply as % later
+      .size([100, 100])
+      .sticky(true)
+      .value(function(d) { return d.mcap; });
+
+    var div = d3.select(".treemap");
+
+    function position() {
+      this
+        .style("left", function(d) { return d.x + "%"; })
+        .style("top", function(d) { return d.y + "%"; })
+        .style("width", function(d) { return d.dx + "%"; })
+        .style("height", function(d) { return d.dy + "%"; });
+    }
+
+    function getLabel(d) {
+      return d.name;
+    }
+
+    var node =
+      div.datum(data).selectAll(".node")
+      .data(treemap.nodes)
+      .enter().append("div")
+      .attr("class", "node")
+      .call(position)
+      .style("background", function(d) { return color(getLabel(d)); })
+      .text(getLabel);
+  </script>
+</body>
+</html>
